@@ -66,9 +66,9 @@ class RandomMaze(object):
             for col in range(self.maze_size[1]):
                 self.blocks_list[row][col].draw(screen)
         # 起点和终点标志
-        Label(screen, self.font, 'S', (255, 0, 0), (self.border_size[0] - 10, self.border_size[1]))
-        Label(screen, self.font, 'D', (255, 0, 0), (self.border_size[0] + (self.maze_size[1] - 1) * self.block_size,
-                                                    self.border_size[1] + self.maze_size[0] * self.block_size + 5))
+        Label_ce(screen, self.font, 'S', (255, 0, 0), (self.border_size[0] - 10, self.border_size[1]))
+        Label_ce(screen, self.font, 'D', (255, 0, 0), (self.border_size[0] + (self.maze_size[1] - 1) * self.block_size,
+                                                       self.border_size[1] + self.maze_size[0] * self.block_size + 5))
 
     '''创建迷宫'''
 

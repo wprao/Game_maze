@@ -22,10 +22,12 @@
         - start point ->可设置
         - destination ->可设置
         - border size ->根据设置的maze size进行计算
+        - colors
     + 界面初始化
         - game start
         - game setting
         - game switch
+        - game end
     + 其他模块
         - Label
         - Button
