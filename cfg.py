@@ -2,7 +2,10 @@
 
 SCREENSIZE = (800, 625)
 HEROPICPATH = 'resources/images/hero.png'
-FPS = 20
+# FONT = 'InkFree'
+FONT = 'SegoeScript'
+# FONT = 'ComicSansMS'
+FPS = 30
 BLOCKSIZE = 15
 MAZESIZE = (15, 10)  # num_rows * num_cols
 STARTPOINT = [0, 0]

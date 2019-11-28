@@ -5,16 +5,16 @@ import pygame, pygame.font, pygame.event, pygame.draw, string
 from tkinter import simpledialog
 
 
-def isvisited(screen, position, color=(255, 0, 0)):
+def path_mark(screen, position, color=(255, 0, 0)):
     pygame.draw.circle(screen, color, position, 2)
 
 
-def showText(screen, font, text, color, position):
+def Label(screen, font, text, color, position):
     text_render = font.render(text, True, color)  # 文本样式
     rect = text_render.get_rect()  # 文本位置
-    rect.left, rect.top = position
-    screen.blit(text_render, rect)
-    return rect.right
+    rect.centerx, rect.centery = position
+    return screen.blit(text_render, rect)
+    # return rect.right
 
 
 def Button(screen, position, text, font, buttoncolor=(0, 0, 0), textcolor=(255, 255, 255),
@@ -27,6 +27,7 @@ def Button(screen, position, text, font, buttoncolor=(0, 0, 0), textcolor=(255, 
     rect.centerx, rect.centery = left + bwidth / 2, top + bheigh / 2
     return screen.blit(text_render, rect)
 
+
 # http://www.pygame.org/pcr/inputbox/
 def InputBox(screen, position, question, font, boxcolor=(0, 0, 0),
              textcolor=(255, 255, 255),
@@ -37,7 +38,7 @@ def InputBox(screen, position, question, font, boxcolor=(0, 0, 0),
     while True:
         while True:
             for event in pygame.event.get():
-                if event.type==pygame.QUIT:
+                if event.type == pygame.QUIT:
                     pygame.quit()
                     sys.exit(-1)
                 if event.type == KEYDOWN:
@@ -58,20 +59,35 @@ def InputBox(screen, position, question, font, boxcolor=(0, 0, 0),
     return "".join(current_string)
 
 
-def Interface(screen, cfg, mode='game start'):
-    pygame.display.set_mode(cfg.SCREENSIZE)
-    font = pygame.font.SysFont('Comic Sans MS', 30)
+def Interface(screen, cfg, mode='game_start', title='Maze'):
+    # pygame.display.set_mode(cfg.SCREENSIZE)
+    font_title=pygame.font.SysFont(cfg.FONT,100)
+    font_title_min=pygame.font.SysFont(cfg.FONT,70)
+    font = pygame.font.SysFont(cfg.FONT, 30)
+    buttons = []
+    lable_title = {'font': pygame.font.SysFont(cfg.FONT, 100), 'text': title, 'color': (255, 0, 0),
+                   'position': ((cfg.SCREENSIZE[0]) // 2, cfg.SCREENSIZE[1] // 3)}
     if mode == 'game_start':
         clock = pygame.time.Clock()
-        while (True):
+        while True:
             screen.fill((255, 255, 255))
-            showText(screen, pygame.font.SysFont('Consolas', 90), 'M A Z E', (255, 0, 0),
-                     ((cfg.SCREENSIZE[0] - 350) // 2, cfg.SCREENSIZE[1] // 6))
-            button_start = Button(screen, ((cfg.SCREENSIZE[0] - 200) // 2, cfg.SCREENSIZE[1] // 3), 'START', font)
-            button_quit = Button(screen, ((cfg.SCREENSIZE[0] - 200) // 2, cfg.SCREENSIZE[1] - cfg.SCREENSIZE[1] // 3),
-                                 'QUIT', font)
-            # button_setting = InputBox(screen, ((cfg.SCREENSIZE[0] - 200) // 2, cfg.SCREENSIZE[1] // 2), 'SETTING', font)
-
+            Label(screen, lable_title['font'], lable_title['text'], lable_title['color'],
+                  lable_title['position'])
+            font.set_underline(True)
+            button_start = Label(screen, font, 'Start', (0, 0, 0),
+                                 ((cfg.SCREENSIZE[0]) // 2, cfg.SCREENSIZE[1] // 2))
+            button_quit = Label(screen, font, 'Quit', (0, 0, 0),
+                                ((cfg.SCREENSIZE[0]) // 2, cfg.SCREENSIZE[1] - cfg.SCREENSIZE[1] // 3))
+            if button_start.collidepoint(pygame.mouse.get_pos()):
+                screen.fill((255, 255, 255))
+                font = pygame.font.SysFont(cfg.FONT, 50)
+                button_start = Label(screen, font, 'Start', (0, 0, 0),
+                                     ((cfg.SCREENSIZE[0]) // 2, cfg.SCREENSIZE[1] // 2))
+            else:
+                font = pygame.font.SysFont(cfg.FONT, 30)
+                button_start = Label(screen, font, 'Start', (0, 0, 0),
+                                     ((cfg.SCREENSIZE[0]) // 2, cfg.SCREENSIZE[1] // 2))
+            font = pygame.font.SysFont(cfg.FONT, 30)
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     pygame.quit()
@@ -90,6 +106,7 @@ def Interface(screen, cfg, mode='game start'):
             screen.fill((255, 255, 255))
             button_start = Button(screen, ((cfg.SCREENSIZE[0] - 200) // 2, cfg.SCREENSIZE[1] // 3), 'NEXT',
                                   font)
+
             button_quit = Button(screen, ((cfg.SCREENSIZE[0] - 200) // 2, cfg.SCREENSIZE[1] // 2), 'QUIT',
                                  font)
             for event in pygame.event.get():
@@ -100,8 +117,7 @@ def Interface(screen, cfg, mode='game start'):
                     if button_start.collidepoint(pygame.mouse.get_pos()):
                         return True
                     elif button_quit.collidepoint(pygame.mouse.get_pos()):
-                        pygame.quit()
-                        sys.exit(-1)
+                        Interface(screen, cfg, 'game_end')
             pygame.display.update()
             clock.tick(cfg.FPS)
     elif mode == 'game_end':
