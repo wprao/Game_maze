@@ -140,7 +140,23 @@
 
 # print(cfg.FPS)
 
-print('*'*4)
-print('('*3+'2')
-for i in range(1,4):
-    print(i)
+s='2222'
+print(s.isdigit())
+s='2as'
+print(s.isdigit())
+
+import re
+# pattern = re.compile('^\[(\d{1,})，*,*(\d{1,})\]$')
+pattern = re.compile('^\[(\d{1,})[，*,*\s]*(\d{1,})\]$')
+x=pattern.match('[0, 0]')
+print(x)
+x=pattern.match('[0,，0]')
+print(x)
+x=pattern.match('[0,0]')
+print(x)
+x=pattern.match('[0,0]')
+print(x)
+print(x.group(0))
+print(x.group(1))
+print(x.group(2))
+# x,y=x

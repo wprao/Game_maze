@@ -53,15 +53,33 @@ def Label_co(screen, font, text, color, position):
 
 
 def check_setted(cfg):
-    setted = [False, False, False, False]
-    if 0 < cfg['Rows'] <= 35:
-        setted[0] = True
-    if 0 < cfg['Cols'] <= 50:
-        setted[1] = True
-    if 0 <= cfg['Starting point'][0] < cfg['Rows'] and 0 <= cfg['Starting point'][1] < cfg['Cols']:
-        setted[2] = True
-    if 0 <= cfg['Destination'][0] < cfg['Rows'] and 0 <= cfg['Destination'][1] < cfg['Cols']:
-        setted[3] = True
+    setted = [True, False, False, False, False]
+    # 格式转换
+    for key in cfg.keys():
+        cfg[key] = str(cfg[key])
+    if cfg['Rows'].isdigit():
+        cfg['Rows'] = int(cfg['Rows'])
+        # 检查数字
+        if 0 < cfg['Rows'] <= 35:
+            setted[1] = True
+    if cfg['Cols'].isdigit():
+        cfg['Cols'] = int(cfg['Cols'])
+        # 检查数字
+        if 0 < cfg['Cols'] <= 50:
+            setted[2] = True
+    pattern = re.compile('^\[(\d{1,})[，*,*\s]*(\d{1,})\]$')
+    g = pattern.match(cfg['Starting point'])
+    if g:
+        x, y = g.group(1), g.group(2)
+        cfg['Starting point'] = [int(x), int(y)]
+        if 0 <= cfg['Starting point'][0] < cfg['Rows'] and 0 <= cfg['Starting point'][1] < cfg['Cols']:
+            setted[3] = True
+    g = pattern.match(cfg['Destination'])
+    if g:
+        x, y = g.group(1), g.group(2)
+        cfg['Destination'] = [int(x), int(y)]
+        if 0 <= cfg['Destination'][0] < cfg['Rows'] and 0 <= cfg['Destination'][1] < cfg['Cols']:
+            setted[4] = True
     return setted
 
 
@@ -79,71 +97,119 @@ def InputBox(screen, font, focus, question, ans, hint, color, position, max):
     font.set_underline(False)
     Label_co(screen, font, hint, color, (rect2.left + rect2.width, y))
     font.set_italic(False)
-    return rect
+    return pygame.Rect(rect.left, rect.top, max - position[0], rect.height)
 
 
 def setting(screen, cfg):
     # 字体样式
-    font_title = pygame.font.SysFont(cfg.FONT, 80)
-    font = pygame.font.SysFont(cfg.FONT2, 45)
-    font_start = pygame.font.SysFont(cfg.FONT, 70)
+    font_title = pygame.font.SysFont(cfg.FONT, 80)  # 标题字体
+    font = pygame.font.SysFont(cfg.FONT2, 45)  # 输入框字体
+    font_warn = pygame.font.SysFont(cfg.FONT2, 20)  # 警告字体
+    font_start = pygame.font.SysFont(cfg.FONT, 70)  # 按钮字体
+    font_start.set_underline(True)  # 开启下划线
+    font_start_focus = pygame.font.SysFont(cfg.FONT, 85)  # 按钮焦点字体
+
     # 设置
     cfgs = {'Rows': cfg.MAZESIZE[0], 'Cols': cfg.MAZESIZE[1], 'Starting point': cfg.STARTPOINT,
             'Destination': cfg.DESTINATION}
     # 设置是否正确
     setted = check_setted(cfgs)
-    focus = ['title', 'Rows', 'Cols', 'Starting point', 'Destination']
-    hint = {'Rows': '(0<rows<=35)', 'Cols': '(0 < cols <= 50)', 'Starting point': '', 'Destination': ''}
-    focused = 1
-    # current_string=str(cfgs[focus[focused]])
-    current_string=[]
+    # 警告
+    warnings = {'Correct': 'Correct settings', 'Incorrect': 'Incorrect settings'}
+
+    # 输入框
+    focus = ['title', 'Rows', 'Cols', 'Starting point', 'Destination']  # 标题 输入框
+    hint = {'Rows': '(0<rows<=35)', 'Cols': '(0 < cols <= 50)', 'Starting point': '', 'Destination': ''}  # 输入提示
+    focuse_now = 1  # 焦点输入框
+
+    # 按钮
+    buttons = {'Prim': Label_ce(screen, font_start, 'Prim', cfg.FOREGROUND,
+                                (cfg.SCREENSIZE[0] // 4, cfg.SCREENSIZE[1] - font_start.size('')[1] // 2)),
+               'DFS': Label_ce(screen, font_start, 'DFS', cfg.FOREGROUND,
+                               (cfg.SCREENSIZE[0] - cfg.SCREENSIZE[0] // 4,
+                                cfg.SCREENSIZE[1] - font_start.size('')[1] // 2))}
+
     while True:
-        screen.fill(cfg.BACKGROUND)
-        # 标题
-        # 输入框
+        screen.fill(cfg.BACKGROUND)  # 填色
+        # 标题 输入框
         labels = {'title': Label_co(screen, font_title, 'Setting:', cfg.FOREGROUND, (10, 0)),
-                   'Rows': None, 'Cols': None, 'Starting point': None, 'Destination': None}
+                  'Rows': None, 'Cols': None, 'Starting point': None, 'Destination': None}
         pygame.draw.line(screen, cfg.LINE, (0, labels['title'].top + labels['title'].height - 20),
-                         (labels['title'].left + labels['title'].width + 400,
-                          labels['title'].top + labels['title'].height - 20))
+                         # (labels['title'].left + labels['title'].width + 400,
+                         (cfg.SCREENSIZE[0], labels['title'].top + labels['title'].height - 20))  # 分割线
+
+        # 绘制输入框（区分焦点输入框）
         for i in range(1, 5):
-            if i == focused:
-                labels[focus[focused]] = InputBox(screen, font, True, focus[focused] + ': ', str(cfgs[focus[focused]]),
-                                                   hint[focus[focused]], cfg.HIGHLIGHT,
-                                                   (20, labels[focus[focused - 1]].top + labels[
-                                                       focus[focused - 1]].height + 30),
-                                                   cfg.SCREENSIZE[0])
+            if i == focuse_now:
+                labels[focus[focuse_now]] = InputBox(screen, font, True, focus[focuse_now] + ': ',
+                                                     str(cfgs[focus[focuse_now]]),
+                                                     hint[focus[focuse_now]], cfg.HIGHLIGHT,
+                                                     (20, labels[focus[focuse_now - 1]].top + labels[
+                                                         focus[focuse_now - 1]].height + 30),
+                                                     cfg.SCREENSIZE[0])
             else:
                 labels[focus[i]] = InputBox(screen, font, False, focus[i] + ': ', str(cfgs[focus[i]]), hint[focus[i]],
-                                             cfg.FOREGROUND,
-                                             (20, labels[focus[i - 1]].top + labels[focus[i - 1]].height + 30),
-                                             cfg.SCREENSIZE[0])
-        warning = Label_co(screen, font, '', cfg.HIGHLIGHT, (10, cfg.SCREENSIZE[1] - font_title.size('')[1] - 20))
-        start = Label_ce(screen, pygame.font.SysFont(cfg.FONT, 70), 'Start', cfg.FOREGROUND,
-                         (cfg.SCREENSIZE[0] // 2, cfg.SCREENSIZE[1] - font_title.size('')[1] // 2))
+                                            cfg.FOREGROUND,
+                                            (20, labels[focus[i - 1]].top + labels[focus[i - 1]].height + 30),
+                                            cfg.SCREENSIZE[0])
+
+        # 警告
+        if setted.count(True) == 5:
+            warn = warnings['Correct']
+        else:
+            warn = warnings['Incorrect']
+        warning = Label_co(screen, font_warn, '· Tips: ' + warn, cfg.HIGHLIGHT,
+                           (20, cfg.SCREENSIZE[1] - font_start_focus.size('')[1] - 30))
+        pygame.draw.line(screen, cfg.LINE, (0, warning.top + warning.height),
+                         (cfg.SCREENSIZE[0], warning.top + warning.height))  # 分割线
+
+        # 按钮 区分设置正确与否
+        for key in buttons.keys():
+            if buttons[key].collidepoint(pygame.mouse.get_pos()) and warn == warnings['Correct']:
+                buttons[key] = Label_ce(screen, font_start_focus, key, cfg.FOREGROUND,
+                                        (buttons[key].centerx, buttons[key].centery));
+            else:
+                buttons[key] = Label_ce(screen, font_start, key, cfg.FOREGROUND,
+                                        (buttons[key].centerx, buttons[key].centery));
+
+        current_string = [str(cfgs[focus[focuse_now]])]
+        # print(focuse_now, current_string)
+
+        # 事件处理
         for event in pygame.event.get():
+            # 退出游戏
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit(-1)
-            if event.type == KEYDOWN:
+            # 鼠标点击
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                for key in buttons.keys():
+                    if buttons[key].collidepoint(pygame.mouse.get_pos()) and warn == warnings['Correct']:
+                        return key
+                for key in labels.keys():
+                    if labels[key].collidepoint(pygame.mouse.get_pos()) and key != 'title':
+                        focuse_now = focus.index(key)
+            # 键盘输入
+            elif event.type == KEYDOWN:
                 inkey = event.key
                 if inkey == K_BACKSPACE:
                     current_string = current_string[0:-1]
-                elif inkey == K_RETURN or inkey == K_RIGHT:
-                    setted = check_setted(cfgs)
-                    if setted.count(True) != 4:
-                        warning = Label_co(screen, font, '输入有错', cfg.HIGHLIGHT,
-                                           (10, cfg.SCREENSIZE[1] - font_title.size('')[1] - 20))
-                    else:
-                        pass
+                    cfgs[focus[focuse_now]] = ''.join(current_string)
+                elif inkey == K_RETURN or inkey == K_RIGHT or inkey == K_DOWN:
+                    if focuse_now < 4:
+                        focuse_now = focuse_now + 1
+                elif inkey == K_LEFT or inkey == K_UP:
+                    if focuse_now > 1:
+                        focuse_now = focuse_now - 1
                 elif inkey <= 127:
                     current_string.append(chr(inkey))
-                else:
-                    pass
-                pygame.display.update()
+                    cfgs[focus[focuse_now]] = ''.join(current_string)
             else:
                 pass
-        pygame.display.update()
+            setted = check_setted(cfgs)
+            pygame.display.update()
+        else:
+            pass
 
 
 def Interface(screen, cfg, mode='game_start', title='Maze'):
