@@ -5,10 +5,6 @@ from pygame.locals import *
 import pygame, pygame.font, pygame.event, pygame.draw, string
 
 
-def path_mark(screen, position, color=(255, 0, 0)):
-    pygame.draw.circle(screen, color, position, 2)
-
-
 def Label_ce(screen, font, text, color, position):
     text_render = font.render(text, True, color)  # 文本样式
     rect = text_render.get_rect()  # 文本位置
@@ -61,8 +57,8 @@ def InputBox(screen, font, focus, question, ans, hint, color, position, max):
     font.set_italic(focus)
     # 求空格数
     width, height = font.size(question + ans + hint)
-    blank = (max - position[0] - width) // 2 // 25
-    left = (max - position[0] - width - blank * 25) // 25
+    blank = (max - position[0] - width) // 2 // font.size(' ')[0]
+    left = (max - position[0] - width - blank * font.size(' ')[0]) // font.size(' ')[0]
     # question
     rect = Label_co(screen, font, question, color, position)
     x, y = rect.left + rect.width, rect.top
@@ -84,17 +80,17 @@ def setting(screen, cfg):
     font_start_focus = pygame.font.SysFont(cfg.FONT, 85)  # 按钮焦点字体
 
     # 设置
-    cfgs = {'Rows': cfg.MAZESIZE[0], 'Cols': cfg.MAZESIZE[1], 'Starting point': cfg.STARTPOINT,
-            'Destination': cfg.DESTINATION}
+    cfg_now = {'Rows': cfg.MAZESIZE[0], 'Cols': cfg.MAZESIZE[1], 'Starting point': cfg.STARTPOINT,
+               'Destination': cfg.DESTINATION}
     # 设置是否正确
-    setted = check_setted(cfgs)
+    setted = check_setted(cfg_now)
     # 警告
     warnings = {'Correct': 'Correct settings', 'Incorrect': 'Incorrect settings'}
 
     # 输入框
     focus = ['title', 'Rows', 'Cols', 'Starting point', 'Destination']  # 标题 输入框
-    hint = {'Rows': '(0<rows<=35)', 'Cols': '(0 < cols <= 50)', 'Starting point': '', 'Destination': ''}  # 输入提示
-    focuse_now = 1  # 焦点输入框
+    hint = {'Rows': '(0<rows<=35)', 'Cols': '(0 < cols <= 50)', 'Starting point': ' ', 'Destination': ' '}  # 输入提示
+    focus_now = 1  # 焦点输入框
 
     # 按钮
     buttons = {'Prim': Label_ce(screen, font_start, 'Prim', cfg.FOREGROUND,
@@ -114,15 +110,16 @@ def setting(screen, cfg):
 
         # 绘制输入框（区分焦点输入框）
         for i in range(1, 5):
-            if i == focuse_now:
-                labels[focus[focuse_now]] = InputBox(screen, font, True, focus[focuse_now] + ': ',
-                                                     str(cfgs[focus[focuse_now]]),
-                                                     hint[focus[focuse_now]], cfg.HIGHLIGHT,
-                                                     (20, labels[focus[focuse_now - 1]].top + labels[
-                                                         focus[focuse_now - 1]].height + 30),
-                                                     cfg.SCREENSIZE[0])
+            if i == focus_now:
+                labels[focus[focus_now]] = InputBox(screen, font, True, focus[focus_now] + ': ',
+                                                    str(cfg_now[focus[focus_now]]),
+                                                    hint[focus[focus_now]], cfg.HIGHLIGHT,
+                                                    (20, labels[focus[focus_now - 1]].top + labels[
+                                                        focus[focus_now - 1]].height + 30),
+                                                    cfg.SCREENSIZE[0])
             else:
-                labels[focus[i]] = InputBox(screen, font, False, focus[i] + ': ', str(cfgs[focus[i]]), hint[focus[i]],
+                labels[focus[i]] = InputBox(screen, font, False, focus[i] + ': ', str(cfg_now[focus[i]]),
+                                            hint[focus[i]],
                                             cfg.FOREGROUND,
                                             (20, labels[focus[i - 1]].top + labels[focus[i - 1]].height + 30),
                                             cfg.SCREENSIZE[0])
@@ -146,7 +143,7 @@ def setting(screen, cfg):
                 buttons[key] = Label_ce(screen, font_start, key, cfg.FOREGROUND,
                                         (buttons[key].centerx, buttons[key].centery));
 
-        current_string = list(str(cfgs[focus[focuse_now]]))
+        current_string = list(str(cfg_now[focus[focus_now]]))
 
         # 事件处理
         for event in pygame.event.get():
@@ -158,29 +155,36 @@ def setting(screen, cfg):
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 for key in buttons.keys():
                     if buttons[key].collidepoint(pygame.mouse.get_pos()) and warn == warnings['Correct']:
-                        print(cfgs)
+                        # 修改配置
+                        cfg.MAZESIZE = [cfg_now['Rows'], cfg_now['Cols']]
+                        cfg.STARTPOINT = cfg_now['Starting point']
+                        cfg.DESTINATION = cfg_now['Destination']
+                        cfg.BORDERSIZE = (
+                            (cfg.SCREENSIZE[0] - cfg.MAZESIZE[1] * cfg.BLOCKSIZE) // 2,
+                            (cfg.SCREENSIZE[1] - cfg.MAZESIZE[0] * cfg.BLOCKSIZE) // 2)
+                        cfg.write_cfg()
                         return key
                 for key in labels.keys():
                     if labels[key].collidepoint(pygame.mouse.get_pos()) and key != 'title':
-                        focuse_now = focus.index(key)
+                        focus_now = focus.index(key)
             # 键盘输入
             elif event.type == KEYDOWN:
                 inkey = event.key
                 if inkey == K_BACKSPACE:
                     current_string = current_string[0:-1]
-                    cfgs[focus[focuse_now]] = ''.join(current_string)
+                    cfg_now[focus[focus_now]] = ''.join(current_string)
                 elif inkey == K_RETURN or inkey == K_RIGHT or inkey == K_DOWN:
-                    if focuse_now < 4:
-                        focuse_now = focuse_now + 1
+                    if focus_now < 4:
+                        focus_now = focus_now + 1
                 elif inkey == K_LEFT or inkey == K_UP:
-                    if focuse_now > 1:
-                        focuse_now = focuse_now - 1
+                    if focus_now > 1:
+                        focus_now = focus_now - 1
                 elif inkey <= 127:
                     current_string.append(chr(inkey))
-                    cfgs[focus[focuse_now]] = ''.join(current_string)
+                    cfg_now[focus[focus_now]] = ''.join(current_string)
             else:
                 pass
-            setted = check_setted(cfgs)
+            setted = check_setted(cfg_now)
             pygame.display.update()
         else:
             pass

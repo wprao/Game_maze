@@ -3,6 +3,7 @@ Function:
 	随机生成迷宫
 '''
 import pygame
+import cfg
 import random
 from modules.misc import *
 
@@ -58,12 +59,18 @@ class Block():
 
 class RandomMaze():
     # maze_size:迷宫大小；block_size:格子大小;border_size:边框大小
-    def __init__(self, maze_size, block_size, border_size, **kwargs):
+    def __init__(self, maze_size, block_size, border_size, arithmetic, starting_point, destination, **kwargs):
         self.block_size = block_size
         self.border_size = border_size
         self.maze_size = maze_size
+        self.starting_point = starting_point
+        self.destination = destination
+        # if arithmetic == 'Prim':
+        #     self.blocks_list = RandomMaze.createMaze_Prim(maze_size, block_size, border_size)
+        # else:
+        #     self.blocks_list = RandomMaze.createMaze_DFS(maze_size, block_size, border_size)
         self.blocks_list = RandomMaze.createMaze(maze_size, block_size, border_size)
-        self.font = pygame.font.SysFont('Consolas', 15)
+        self.font = pygame.font.SysFont(cfg.FONT, 12)
 
     '''画到屏幕上'''
 
@@ -72,9 +79,13 @@ class RandomMaze():
             for col in range(self.maze_size[1]):
                 self.blocks_list[row][col].draw(screen)
         # 起点和终点标志
-        showText(screen, self.font, 'S', (255, 0, 0), (self.border_size[0] - 10, self.border_size[1]))
-        showText(screen, self.font, 'D', (255, 0, 0), (self.border_size[0] + (self.maze_size[1] - 1) * self.block_size,
-                                                       self.border_size[1] + self.maze_size[0] * self.block_size + 5))
+        Label_ce(screen, self.font, 'S', (255, 0, 0),
+                 (self.starting_point[1] * self.block_size + self.border_size[0]+8, self.starting_point[
+                     0] * self.block_size + self.border_size[1]+8))
+        # Label_co(screen, self.font, 'S', (255, 0, 0), (self.border_size[0] - 10, self.border_size[1]))
+        Label_ce(screen, self.font, 'D', (255, 0, 0),
+                 (self.destination[1] * self.block_size + self.border_size[0]+8, self.destination[
+                     0] * self.block_size + self.border_size[1]+8))
 
     '''创建迷宫'''
 

@@ -1,7 +1,3 @@
-'''
-Function:
-	定义游戏精灵类
-'''
 import pygame
 
 '''定义hero'''
