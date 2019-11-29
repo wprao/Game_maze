@@ -24,34 +24,6 @@ def Label_co(screen, font, text, color, position):
 
 
 # http://www.pygame.org/pcr/inputbox/
-# def enter(screen, position, question, font, boxcolor=(0, 0, 0), textcolor=(255, 255, 255),
-#           bwidth=200, bheigh=50):
-#     current_string = []
-#     pygame.display.update()
-#     while True:
-#         while True:
-#             for event in pygame.event.get():
-#                 if event.type == pygame.QUIT:
-#                     pygame.quit()
-#                     sys.exit(-1)
-#                 if event.type == KEYDOWN:
-#                     inkey = event.key;
-#                     if inkey == K_BACKSPACE:
-#                         current_string = current_string[0:-1]
-#                     elif inkey == K_RETURN:
-#                         break
-#                     elif inkey <= 127:
-#                         current_string.append(chr(inkey))
-#                     else:
-#                         pass
-#                     Button(screen, position, question + ':' + "".join(current_string), font, boxcolor, textcolor,
-#                            bwidth, bheigh)
-#                     pygame.display.update()
-#                 else:
-#                     pass
-#     return "".join(current_string)
-
-
 def check_setted(cfg):
     setted = [True, False, False, False, False]
     # 格式转换
@@ -72,13 +44,15 @@ def check_setted(cfg):
     if g:
         x, y = g.group(1), g.group(2)
         cfg['Starting point'] = [int(x), int(y)]
-        if 0 <= cfg['Starting point'][0] < cfg['Rows'] and 0 <= cfg['Starting point'][1] < cfg['Cols']:
+        if setted[1] and setted[2] and 0 <= cfg['Starting point'][0] < cfg['Rows'] and 0 <= cfg['Starting point'][1] < \
+                cfg['Cols']:
             setted[3] = True
     g = pattern.match(cfg['Destination'])
     if g:
         x, y = g.group(1), g.group(2)
         cfg['Destination'] = [int(x), int(y)]
-        if 0 <= cfg['Destination'][0] < cfg['Rows'] and 0 <= cfg['Destination'][1] < cfg['Cols']:
+        if setted[1] and setted[2] and 0 <= cfg['Destination'][0] < cfg['Rows'] and 0 <= cfg['Destination'][1] < cfg[
+            'Cols']:
             setted[4] = True
     return setted
 
@@ -172,8 +146,7 @@ def setting(screen, cfg):
                 buttons[key] = Label_ce(screen, font_start, key, cfg.FOREGROUND,
                                         (buttons[key].centerx, buttons[key].centery));
 
-        current_string = [str(cfgs[focus[focuse_now]])]
-        # print(focuse_now, current_string)
+        current_string = list(str(cfgs[focus[focuse_now]]))
 
         # 事件处理
         for event in pygame.event.get():
@@ -185,6 +158,7 @@ def setting(screen, cfg):
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 for key in buttons.keys():
                     if buttons[key].collidepoint(pygame.mouse.get_pos()) and warn == warnings['Correct']:
+                        print(cfgs)
                         return key
                 for key in labels.keys():
                     if labels[key].collidepoint(pygame.mouse.get_pos()) and key != 'title':
@@ -215,7 +189,6 @@ def setting(screen, cfg):
 def Interface(screen, cfg, mode='game_start', title='Maze'):
     # 字体样式
     font_title = pygame.font.SysFont(cfg.FONT, 120)  # 标题字体
-    # font_title_min = pygame.font.SysFont(cfg.FONT, 25)  # 标题字体
     font = pygame.font.SysFont(cfg.FONT, 55)  # 按钮字体
     font.set_underline(True)  # 开启下划线
     font_focus = pygame.font.SysFont(cfg.FONT, 100)  # 焦点按钮字体
