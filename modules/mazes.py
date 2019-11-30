@@ -1,7 +1,7 @@
-'''
+"""
 Function:
-	随机生成迷宫
-'''
+    随机生成迷宫
+"""
 import pygame
 import cfg
 import random
@@ -80,12 +80,11 @@ class RandomMaze():
                 self.blocks_list[row][col].draw(screen)
         # 起点和终点标志
         Label_ce(screen, self.font, 'S', (255, 0, 0),
-                 (self.starting_point[1] * self.block_size + self.border_size[0]+8, self.starting_point[
-                     0] * self.block_size + self.border_size[1]+8))
-        # Label_co(screen, self.font, 'S', (255, 0, 0), (self.border_size[0] - 10, self.border_size[1]))
+                 (self.starting_point[1] * self.block_size + self.border_size[0] + 8, self.starting_point[
+                     0] * self.block_size + self.border_size[1] + 8))
         Label_ce(screen, self.font, 'D', (255, 0, 0),
-                 (self.destination[1] * self.block_size + self.border_size[0]+8, self.destination[
-                     0] * self.block_size + self.border_size[1]+8))
+                 (self.destination[1] * self.block_size + self.border_size[0] + 8, self.destination[
+                     0] * self.block_size + self.border_size[1] + 8))
 
     '''创建迷宫'''
 
