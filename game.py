@@ -52,6 +52,7 @@ def main(cfg):
             path_finding = ["Lost your way ?", "Too lazy ?"]
             path_n = 0
             guide = []
+            searched = []
             rect = pygame.Rect(10, 10, font.size('Level Done: %d' % num_levels)[0],
                                font.size('Level Done: %d' % num_levels)[1])
             button = Label_ce(screen, font_button, path_finding[path_n], cfg.HIGHLIGHT,
@@ -61,16 +62,19 @@ def main(cfg):
                 dt = clock.tick(cfg.FPS)
                 screen.fill((255, 255, 255))
                 is_move = False
-                if path_n==1:
+                if path_n == 1:
+                    for move in searched:
+                        pygame.draw.circle(screen, cfg.LINE, move, 2)
                     for move in guide:
                         pygame.draw.circle(screen, cfg.FOREGROUND, move, 2)
                 for move in move_records:
                     pygame.draw.circle(screen, cfg.HIGHLIGHT, move, 2)
-                guide = A_Star(maze_now, hero_now.coordinate, cfg.DESTINATION)
+                guide, searched = A_Star(maze_now, hero_now.coordinate, cfg.DESTINATION)
                 # ----显示一些信息
                 Label_co(screen, font, 'Level Done: %d' % num_levels, cfg.HIGHLIGHT, (10, 10))
                 Label_co(screen, font, 'Used Steps: %s' % num_steps, cfg.HIGHLIGHT, (cfg.SCREENSIZE[0] // 4 + 10, 10))
-                Label_co(screen, font, 'Min Cost: %s' % (len(guide)-1), cfg.HIGHLIGHT, (cfg.SCREENSIZE[0] // 2 + 10, 10))
+                Label_co(screen, font, 'Min Cost: %s' % (len(guide) - 1), cfg.HIGHLIGHT,
+                         (cfg.SCREENSIZE[0] // 2 + 10, 10))
                 Label_co(screen, font, 'S: your starting point    D: your destination', cfg.HIGHLIGHT,
                          (10, cfg.SCREENSIZE[1] - font.size('')[1] - 10))
                 if button.collidepoint(pygame.mouse.get_pos()):

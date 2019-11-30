@@ -1,5 +1,5 @@
 def A_Star(maze, starting_point, destination):
-    def weight(r,c, sr=starting_point[1], sc=starting_point[0], er=destination[0], ec=destination[1]):
+    def weight(r, c, sr=starting_point[1], sc=starting_point[0], er=destination[0], ec=destination[1]):
         return abs(r - sr) + abs(r - er) + abs(c - sc) + abs(c - ec)
 
     def check(r, c, list):
@@ -29,7 +29,20 @@ def A_Star(maze, starting_point, destination):
                 coordinate = (left + maze.block_size // 2, top + maze.block_size // 2)
                 path.append(coordinate)
                 next = close[next]['parent']
-            return path
+            searched = []
+            for block in open:
+                coordinate = (block['r'], block['c'])
+                left, top = coordinate[1] * maze.block_size + maze.border_size[0], coordinate[0] * maze.block_size + \
+                            maze.border_size[1]
+                coordinate = (left + maze.block_size // 2, top + maze.block_size // 2)
+                searched.append(coordinate)
+            for block in close:
+                coordinate = (block['r'], block['c'])
+                left, top = coordinate[1] * maze.block_size + maze.border_size[0], coordinate[0] * maze.block_size + \
+                            maze.border_size[1]
+                coordinate = (left + maze.block_size // 2, top + maze.block_size // 2)
+                searched.append(coordinate)
+            return path, searched
         for i in range(0, 4):
             block_new = {'parent': check(block['r'], block['c'], close), 'r': block['r'] + directions[i][1],
                          'c': block['c'] + directions[i][0],
@@ -43,4 +56,4 @@ def A_Star(maze, starting_point, destination):
                     if open[idx]['f'] > block_new['f']:
                         open[idx]['parent'] = block_new['parent']
                         open[idx]['f'] = block_new['f']
-    return path
+    return path,[]
