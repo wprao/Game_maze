@@ -158,6 +158,15 @@
     + 游戏精灵
     + 迷宫生成算法
     + 搜索路径算法
+## 运行截图
+![开始界面](./resources/images/开始界面.PNG)
+![设置界面](./resources/images/设置界面.PNG)
+![Prim迷宫](./resources/images/Prim.PNG)
+![Prim迷宫寻路](./resources/images/寻路.PNG)
+![游戏界面](./resources/images/Play.PNG)
+![DFS迷宫](./resources/images/DFS.PNG)
+![DFS迷宫寻路](./resources/images/寻路DFS.PNG)
+![关切切换界面](./resources/images/关卡切换界面.PNG)
 ## 实验报告
 1. 封面
 2. 成员分工
