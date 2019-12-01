@@ -1,3 +1,7 @@
+"""
+Function:
+    定义游戏精灵类
+"""
 import pygame
 
 '''定义hero'''
@@ -19,32 +23,16 @@ class Hero(pygame.sprite.Sprite):
 
     def move(self, direction, maze):
         blocks_list = maze.blocks_list
-        if direction == 'up':
-            if blocks_list[self.coordinate[1]][self.coordinate[0]].has_walls[0]:
-                return False
-            else:
-                self.coordinate[1] = self.coordinate[1] - 1
-                return True
-        elif direction == 'down':
-            if blocks_list[self.coordinate[1]][self.coordinate[0]].has_walls[1]:
-                return False
-            else:
-                self.coordinate[1] = self.coordinate[1] + 1
-                return True
-        elif direction == 'left':
-            if blocks_list[self.coordinate[1]][self.coordinate[0]].has_walls[2]:
-                return False
-            else:
-                self.coordinate[0] = self.coordinate[0] - 1
-                return True
-        elif direction == 'right':
-            if blocks_list[self.coordinate[1]][self.coordinate[0]].has_walls[3]:
-                return False
-            else:
-                self.coordinate[0] = self.coordinate[0] + 1
-                return True
-        else:
-            raise ValueError('Unsupport direction <%s> in Hero.move...' % direction)
+        # 上下左右对应坐标的加减
+        directions = {'Up': (0, -1), 'Down': (0, 1), 'Left': (-1, 0), 'Right': (1, 0)}
+        for index, key in enumerate(directions.keys()):
+            if direction == key:
+                if blocks_list[self.coordinate[1]][self.coordinate[0]].has_walls[index]:
+                    return False
+                else:
+                    self.coordinate[0] += directions[key][0]
+                    self.coordinate[1] += directions[key][1]
+                    return True
 
     '''绑定到屏幕'''
 

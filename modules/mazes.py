@@ -1,6 +1,9 @@
 """
 Function:
     随机生成迷宫
+Arithmetic：
+    Randomized Prim's algorithm
+    Recursive backtracking
 """
 import pygame
 import cfg
@@ -90,14 +93,18 @@ class RandomMaze():
 
     @staticmethod
     def createMaze_DFS(maze_size, block_size, border_size):
+        # ----生成全是墙的迷宫
         blocks_list = [[Block([col, row], block_size, border_size) for col in range(maze_size[1])] for row in
                        range(maze_size[0])]
+        # ----将一个单元格加入栈 标记访问 并入栈
         block_now = blocks_list[0][0]
+        block_now.is_visited=True
         records = [block_now]
+        # ----当栈不空时
         while records:
-            if not block_now.is_visited:
-                records.append(block_now)
-                block_now.is_visited = True
+            # ---从堆栈中弹出一个单元格，使其成为当前单元格
+            block_now=records.pop()
+            # ---检查当前单元格的相邻单元 记录未被访问过的
             check = []
             c, r = block_now.coordinate[0], block_now.coordinate[1]
             check_list = [
@@ -109,29 +116,41 @@ class RandomMaze():
             for item in check_list:
                 if item['check'] and not blocks_list[item['coordinate'][0]][item['coordinate'][1]].is_visited:
                     check.append(item['direction'])
+            # ---存在未被访问的邻格
             if check:
+                # ---当前单元格入栈
                 records.append(block_now)
+                # ---随机选择邻格
                 move_direction = random.choice(check)
                 for index, item in enumerate(check_list):
                     if item['direction'] == move_direction:
+                        # ----拆除墙
                         blocks_list[r][c].has_walls[index] = False
                         blocks_list[item['coordinate'][0]][item['coordinate'][1]].has_walls[item['index']] = False
-                        block_now=blocks_list[item['coordinate'][0]][item['coordinate'][1]]
+                        # ----标记访问
+                        blocks_list[item['coordinate'][0]][item['coordinate'][1]].is_visited=True
+                        # ----入栈
+                        records.append(blocks_list[item['coordinate'][0]][item['coordinate'][1]])
                         break
-            else:
-                block_now = records.pop()
         return blocks_list
 
     @staticmethod
     def createMaze_Prim(maze_size, block_size, border_size):
+        # ----生成全是墙的迷宫
         blocks_list = [[Block([col, row], block_size, border_size) for col in range(maze_size[1])] for row in
                        range(maze_size[0])]
+        # ----将一个单元格加入列表
         block_now = blocks_list[0][0]
         records = [block_now]
+        # ----当列表不空时
         while records:
+            # ---随机取出一个单元格
             block_now = random.choice(records)
+            # ---标记访问 加入迷宫
             block_now.is_visited = True
+            # ---从列表中移除这个单元格
             records.remove(block_now)
+            # ---检查相邻单元格 上下左右
             check = []
             c, r = block_now.coordinate[0], block_now.coordinate[1]
             check_list = [
@@ -141,13 +160,17 @@ class RandomMaze():
                 {'check': c < maze_size[1] - 1, 'coordinate': (r, c + 1), 'direction': 'Right', 'index': 2}
             ]
             for item in check_list:
+                # 如果单元格合法
                 if item['check']:
+                    # 如果该相邻单元格在已在迷宫中，记录该单元格
                     if blocks_list[item['coordinate'][0]][item['coordinate'][1]].is_visited:
                         check.append(item['direction'])
                     else:
+                        # 否则 若该单元格不在列表中，加入列表
                         if not blocks_list[item['coordinate'][0]][item['coordinate'][1]] in records:
                             records.append(blocks_list[item['coordinate'][0]][item['coordinate'][1]])
             if check:
+                # 从记录的相邻单元格中随机随机选择一个单元格 将中间的墙拆除
                 move_direction = random.choice(check)
                 for index, item in enumerate(check_list):
                     if item['direction'] == move_direction:
