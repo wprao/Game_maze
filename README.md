@@ -1,9 +1,12 @@
 # Maze
+> 数据结构实验作品，刚好练习一下python，自己学的实在太差劲了。
+> 游戏是基于别人代码基础上进行更改的，只是为了完成作业，资源来源于网上，侵歉删<(＿　＿)>
+[原作者迷宫游戏链接](https://github.com/CharlesPikachu/Games/tree/master/Game20)
 ## 实现功能
 + 用户可以设置迷宫的行数或列数
-+ 随机产生迷宫的状态
++ 随机产生迷宫的状态（Randomized Prim's algorithm，Recursive backtracking）
 + 用户设置入口下标和出口下标
-+ 查询迷宫路径
++ 查询迷宫路径（A*，BFS）
 ## 算法
 ### 迷宫生成算法 [mazes.py](./modules/mazes.py)
 [参考博客](https://blog.csdn.net/juzihongle1/article/details/73135920) [维基百科](https://en.wikipedia.org/wiki/Maze_generation_algorithm#Recursive_backtracker)
