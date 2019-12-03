@@ -96,14 +96,14 @@ class RandomMaze(object):
         # ----生成全是墙的迷宫
         blocks_list = [[Block([col, row], block_size, border_size) for col in range(maze_size[1])] for row in
                        range(maze_size[0])]
-        # ----将一个单元格加入栈 标记访问 并入栈
+        # ----将一个单元格加入栈 标记访问
         block_now = blocks_list[0][0]
-        block_now.is_visited=True
+        block_now.is_visited = True
         records = [block_now]
         # ----当栈不空时
         while records:
             # ---从堆栈中弹出一个单元格，使其成为当前单元格
-            block_now=records.pop()
+            block_now = records.pop()
             # ---检查当前单元格的相邻单元 记录未被访问过的
             check = []
             c, r = block_now.coordinate[0], block_now.coordinate[1]
@@ -128,7 +128,7 @@ class RandomMaze(object):
                         blocks_list[r][c].has_walls[index] = False
                         blocks_list[item['coordinate'][0]][item['coordinate'][1]].has_walls[item['index']] = False
                         # ----标记访问
-                        blocks_list[item['coordinate'][0]][item['coordinate'][1]].is_visited=True
+                        blocks_list[item['coordinate'][0]][item['coordinate'][1]].is_visited = True
                         # ----入栈
                         records.append(blocks_list[item['coordinate'][0]][item['coordinate'][1]])
                         break

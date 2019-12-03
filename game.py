@@ -72,7 +72,7 @@ def main(cfg):
                 is_move = False
 
                 # ----寻找路径
-                if path_n !=2:
+                if path_n != 2:
                     guide, searched = A_Star(maze_now, hero_now.coordinate, cfg.DESTINATION)
                 else:
                     guide, searched = BFS(maze_now, hero_now.coordinate, cfg.DESTINATION)

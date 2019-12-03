@@ -243,7 +243,6 @@ def Interface(screen, cfg, mode='game_start', title='Maze'):
     # ----按钮
     buttons = {'title': None, 'continue': None, 'quit': None}
 
-
     clock = pygame.time.Clock()
     screen.fill(cfg.BACKGROUND)
 
