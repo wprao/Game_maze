@@ -57,7 +57,7 @@ def main(cfg):
             # --记录路径
             move_records = []
             # --寻路功能按钮：显示路径 直接通关
-            path_finding = ["Lost your way ?", "Too lazy ?"]
+            path_finding = ["Lost your way ?(A*)", "Lost your way ?(BFS)", "Too lazy ?"]
             path_n = 0
 
             # --预先获取位置
@@ -72,15 +72,17 @@ def main(cfg):
                 is_move = False
 
                 # ----寻找路径
-                guide, searched = A_Star(maze_now, hero_now.coordinate, cfg.DESTINATION)
-                # guide, searched = BFS(maze_now, hero_now.coordinate, cfg.DESTINATION)
+                if path_n !=2:
+                    guide, searched = A_Star(maze_now, hero_now.coordinate, cfg.DESTINATION)
+                else:
+                    guide, searched = BFS(maze_now, hero_now.coordinate, cfg.DESTINATION)
 
                 # ----显示移动路径
                 for move in move_records:
                     pygame.draw.circle(screen, cfg.HIGHLIGHT, move, 2)
 
                 # ----显示路径
-                if path_n == 1:
+                if path_n != 0:
                     for move in searched:
                         pygame.draw.circle(screen, cfg.LINE, move, 2)
                     for move in guide:
@@ -110,8 +112,8 @@ def main(cfg):
                         sys.exit(-1)
                     # 点击事件
                     elif event.type == pygame.MOUSEBUTTONDOWN:
-                        if path_n == 0:
-                            path_n = 1
+                        if path_n != 2:
+                            path_n += 1
                         else:
                             move_records += guide
                             hero_now.coordinate[0] = cfg.DESTINATION[1]

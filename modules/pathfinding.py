@@ -89,18 +89,25 @@ def A_Star(maze, starting_point, destination):
 
 def BFS(maze, starting_point, destination):
     path = []  # 最终路径
-    searched = [] # 查找过的结点
-    queue = Queue(maxsize=0) #队列
+    searched = []  # 查找过的结点
+    queue = Queue(maxsize=0)  # 队列
     # UP DOWN LEFT RIGHT
     directions = [(0, -1), (0, 1), (-1, 0), (1, 0)]
     block = {'parent': None, 'r': starting_point[1], 'c': starting_point[0]}
 
+    # ----初始化地图
+    for r in range(maze.maze_size[0]):
+        for c in range(maze.maze_size[1]):
+            maze.blocks_list[r][c].is_visited = False
+
     # ----添加起点
     queue.put(block)
     searched.append(block)
+    maze.blocks_list[block['r']][block['c']].is_visited = True
     while queue:
         # 出队
         block = queue.get()
+        maze.blocks_list[block['r']][block['c']].is_visied = True
         # 检查是否到达终点
         if block['r'] == destination[0] and block['c'] == destination[1]:
             path.append(get_pos((block['r'], block['c']), maze.block_size, maze.border_size))
@@ -117,10 +124,11 @@ def BFS(maze, starting_point, destination):
             block_new = {'parent': parent, 'r': block['r'] + directions[i][1],
                          'c': block['c'] + directions[i][0]}
             # 可以走 入队
-            if (not maze.blocks_list[block['r']][block['c']].has_walls[i]) and check(block_new['r'], block_new['c'],
-                                                                                     searched) == -1:
+            if (not maze.blocks_list[block['r']][block['c']].has_walls[i]) and not maze.blocks_list[block_new['r']][
+                block_new['c']].is_visited:
                 queue.put(block_new)
                 searched.append(block_new)
+                maze.blocks_list[block_new['r']][block_new['c']].is_visited = True
     # 未找到路径
     for index, item in enumerate(searched):
         searched[i] = get_pos((item['r'], item['c']), maze.block_size, maze.border_size)

@@ -13,7 +13,7 @@ from modules.misc import *
 '''一个游戏地图块'''
 
 
-class Block():
+class Block(object):
     def __init__(self, coordinate, block_size, border_size, **kwargs):
         # (col, row)
         self.coordinate = coordinate
@@ -60,7 +60,7 @@ class Block():
 '''随机生成迷宫类'''
 
 
-class RandomMaze():
+class RandomMaze(object):
     # maze_size:迷宫大小；block_size:格子大小;border_size:边框大小
     def __init__(self, maze_size, block_size, border_size, arithmetic, starting_point, destination, **kwargs):
         self.block_size = block_size
