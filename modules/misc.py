@@ -11,6 +11,14 @@ import pygame.font
 import pygame.event
 import pygame.draw
 
+
+def read_cfg(cfg):
+    cfgs = cfg.read_cfg()
+    cfg.MAZESIZE = cfgs['MAZESIZE']
+    cfg.STARTPOINT = cfgs['STARTPOINT']
+    cfg.DESTINATION = cfgs['DESTINATION']
+
+
 '''Label: 在指定位置（中心）显示文字'''
 
 
@@ -59,14 +67,14 @@ def check_setted(cfg):
     if g:
         x, y = g.group(1), g.group(2)
         cfg['Starting point'] = [int(x), int(y)]
-        if setted[1] and setted[2] and 0 <= cfg['Starting point'][0] < cfg['Rows'] and 0 <= cfg['Starting point'][1] < \
+        if setted[1] and setted[2] and 0 < cfg['Starting point'][0] <= cfg['Rows'] and 0 < cfg['Starting point'][1] <= \
                 cfg['Cols']:
             setted[3] = True
     g = pattern.match(cfg['Destination'])
     if g:
         x, y = g.group(1), g.group(2)
         cfg['Destination'] = [int(x), int(y)]
-        if setted[1] and setted[2] and 0 <= cfg['Destination'][0] < cfg['Rows'] and 0 <= cfg['Destination'][1] < cfg[
+        if setted[1] and setted[2] and 0 < cfg['Destination'][0] <= cfg['Rows'] and 0 < cfg['Destination'][1] <= cfg[
             'Cols']:
             setted[4] = True
     return setted
@@ -100,6 +108,7 @@ def InputBox(screen, font, focus, question, ans, hint, color, position, max):
 
 
 def setting(screen, cfg):
+    read_cfg(cfg)
     # ----字体样式
     font_title = pygame.font.SysFont(cfg.FONT, 80)  # 标题字体
     font = pygame.font.SysFont(cfg.FONT2, 45)  # 输入框字体
@@ -190,6 +199,8 @@ def setting(screen, cfg):
                             (cfg.SCREENSIZE[0] - cfg.MAZESIZE[1] * cfg.BLOCKSIZE) // 2,
                             (cfg.SCREENSIZE[1] - cfg.MAZESIZE[0] * cfg.BLOCKSIZE) // 2)
                         cfg.write_cfg()  # 将新配置写入配置文件
+                        cfg.STARTPOINT = [cfg_now['Starting point'][0] - 1, cfg_now['Starting point'][1] - 1]
+                        cfg.DESTINATION = [cfg_now['Destination'][0] - 1, cfg_now['Destination'][1] - 1]
                         return key
                 # 点击标签
                 for key in labels.keys():

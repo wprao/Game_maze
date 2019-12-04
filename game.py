@@ -154,8 +154,5 @@ def main(cfg):
 
 if __name__ == '__main__':
     # 读入配置
-    cfgs = cfg.read_cfg()
-    cfg.MAZESIZE = cfgs['MAZESIZE']
-    cfg.STARTPOINT = cfgs['STARTPOINT']
-    cfg.DESTINATION = cfgs['DESTINATION']
+    read_cfg(cfg)
     main(cfg)
