@@ -129,13 +129,13 @@ def main(cfg):
                             is_move = hero_now.move('Left', maze_now)
                         elif event.key == pygame.K_RIGHT:
                             is_move = hero_now.move('Right', maze_now)
-                num_steps += int(is_move)
+                    num_steps += int(is_move)
 
-                # 添加移动记录
-                if is_move:
-                    left, top = hero_now.coordinate[0] * cfg.BLOCKSIZE + cfg.BORDERSIZE[0], hero_now.coordinate[
-                        1] * cfg.BLOCKSIZE + cfg.BORDERSIZE[1]
-                    move_records.append((left + cfg.BLOCKSIZE // 2, top + cfg.BLOCKSIZE // 2))
+                    # 添加移动记录
+                    if is_move:
+                        left, top = hero_now.coordinate[0] * cfg.BLOCKSIZE + cfg.BORDERSIZE[0], hero_now.coordinate[
+                            1] * cfg.BLOCKSIZE + cfg.BORDERSIZE[1]
+                        move_records.append((left + cfg.BLOCKSIZE // 2, top + cfg.BLOCKSIZE // 2))
 
                 hero_now.draw(screen)
                 maze_now.draw(screen)
